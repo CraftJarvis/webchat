@@ -44,6 +44,12 @@ models:
     - mc-base-llava-vicuna-13b-250217:
         model_name: mc-base-llava-vicuna-13b-250217
         base_url: http://100.107.154.21:19000/v1
+    - mc-base-qwen2-vl-7b-250223:
+        model_name: mc-base-qwen2-vl-7b-250223
+        base_url: http://100.107.154.21:22000/v1
+    - mc-reason-qwen2-vl-7b-250224-step2400:
+        model_name: mc-reason-qwen2-vl-7b-250224-step2400
+        base_url: http://100.107.154.21:24000/v1
     - custom:
         model_name: 
         base_url: 

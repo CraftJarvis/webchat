@@ -105,16 +105,16 @@ def remove_last_turn(history):
             break
     return history
 
-def re_generate(message, history, model_name, model_url, api_key, temp, max_output_tokens, stream):
+def re_generate(message, history, model_name, model_url, api_key, system_prompt, temp, max_output_tokens, stream):
     # remove the last message from assistant
     for i in range(len(history)):
         if history[-(i+1)]['role'] == 'user':
             history = history[:-i]
             break
     # print("history when re-generate:", history)
-    yield from predict(message, history, model_name, model_url, api_key, temp, max_output_tokens, stream)
+    yield from predict(message, history, model_name, model_url, api_key, system_prompt, temp, max_output_tokens, stream)
 
-def predict(message, history, model_name, model_url, api_key, temp, max_output_tokens, stream):
+def predict(message, history, model_name, model_url, api_key, system_prompt, temp, max_output_tokens, stream):
     '''
     - message:
     {'text': 'What is the role of the villager seen in the image?', 'files': [{'path': '/tmp/gradio/bd3ef8883b88f81857dfdb68ebbc757024d4fa718e1e0a138e805f27c1cd245a/030-villager.png', 'url': 'https://72721a834ae34c0685.gradio.live/file=/tmp/gradio/bd3ef8883b88f81857dfdb68ebbc757024d4fa718e1e0a138e805f27c1cd245a/030-villager.png', 'size': None, 'orig_name': '030-villager.png', 'mime_type': 'image/png', 'is_stream': False, 'meta': {'_type': 'gradio.FileData'}}]}
@@ -122,8 +122,8 @@ def predict(message, history, model_name, model_url, api_key, temp, max_output_t
     [[('/tmp/gradio/6d6fecf474fc8192b4738918f0162bc731dfdf04eaf060402aa9a9c5ffe9051d/007-dark_forest.png',), None], ['What are the red structures visible in the background?', 'The red structures in the background are giant mushrooms, commonly found in the Roofed Forest biome in Minecraft.']]
     '''
     original_history = history.copy()
-    print("message:", message) 
-    print("history:", history)  
+    # print("message:", message) 
+    # print("history:", history)  
     client = OpenAI(
         api_key=api_key,
         base_url=model_url,
@@ -131,7 +131,10 @@ def predict(message, history, model_name, model_url, api_key, temp, max_output_t
     # Convert chat history to OpenAI format
     post_conv = [
         # {"role": "system", "content": "You are a great ai assistant."}
+        # {"role": "system", "content": [{"type": "text", "text": system_prompt}]}
     ]
+    if system_prompt:
+        post_conv.append({"role": "system", "content": [{"type": "text", "text": system_prompt}]})
     post_conv += history_format(history)
     # post_conv = history
 
@@ -183,7 +186,10 @@ def predict(message, history, model_name, model_url, api_key, temp, max_output_t
         
         if ENABLE_THINKING: # show thought
             from utils import extract_thought
-            thought_content, response_content = extract_thought(partial_message)
+            thought_content, response_content = extract_thought(model_name, partial_message)
+            print("response_content:", response_content)
+            # replace the \n with <br>
+            # response_content = response_content.replace("\n", "<br>")
             if thought_content:
                 history[-1] = {
                     "role":"assistant",

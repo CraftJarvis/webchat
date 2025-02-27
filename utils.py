@@ -40,23 +40,49 @@ def encode_image_base64(image_input) -> str:
     else:
         raise ValueError("Unsupported input type. Must be a URL (str) or a local file path (str).")
     
-def extract_thought(text):
-    # find the "<think>" whether in the text 
-    think_start = text.find("<think>")
-    think_end = text.find("</think>")
-    thought_content = None  
-    response_content = None
-    if think_start == -1:
+def extract_thought(model_name, text):
+    if 'r1' in model_name or 'reason' in model_name:
+        # find the "<think>" whether in the text 
+        think_start = text.find("<think>")
+        think_end = text.find("</think>")
+        thought_content = None  
+        response_content = None
+        if think_start == -1:
+            return None, text
+        else:
+            thought_content = text[think_start+len("<think>"):think_end]
+        
+        if think_end == -1:
+            return thought_content, None
+        else:
+            response_content = text[think_end+len("</think>"):]
+        # print(f"thought_content: {thought_content}, response_content: {response_content}")
+        return thought_content, response_content
+    # elif 'reason' in model_name:
+    #     # find the "<think>" whether in the text 
+    #     think_start = text.find("<|begin_of_thought|>")
+    #     think_end = text.find("<|end_of_thought|>")
+    #     content_start = text.find("['")
+    #     content_end = text.find("']")
+    #     thought_content = None  
+    #     response_content = None
+    #     if think_start == -1:
+    #         return None, text
+    #     else:
+    #         thought_content = text[think_start+len("<|begin_of_thought|>"):think_end]
+        
+    #     if think_end == -1:
+    #         return thought_content, None
+    #     else:
+    #         if content_start == -1:
+    #             response_content = text[think_end+len("<|end_of_thought|>"):]
+    #         else:
+    #             response_content = text[content_start+len("['"):content_end]
+
+    #     # print(f"thought_content: {thought_content}, response_content: {response_content}")
+    #     return thought_content, response_content
+    else:
         return None, text
-    else:
-        thought_content = text[think_start+len("<think>"):think_end]
-    
-    if think_end == -1:
-        return thought_content, None
-    else:
-        response_content = text[think_end+len("</think>"):]
-    # print(f"thought_content: {thought_content}, response_content: {response_content}")
-    return thought_content, response_content
 
 from xml.etree import ElementTree as ET
 def extract_molmo_object_and_points(text):
