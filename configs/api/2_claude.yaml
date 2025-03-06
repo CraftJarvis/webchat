@@ -1,11 +1,10 @@
 models:
     - claude-3-5-sonnet-20240620:
         model_name: claude-3-5-sonnet-20240620
-        base_url: https://api.dwyu.top/v1
-    # - claude-3-5-sonnet-20241022:
-    #     model_name: claude-3-5-sonnet-20241022
-    #     base_url: https://api.dwyu.top/v1
+        base_url: https://aihubmix.com/v1
     - claude-3-5-haiku-20241022:
         model_name: claude-3-5-haiku-20241022
-        base_url: https://api.dwyu.top/v1
-        
+        base_url: https://aihubmix.com/v1
+    - claude-3-7-sonnet-20250219:
+        model_name: claude-3-7-sonnet-20250219
+        base_url: https://aihubmix.com/v1

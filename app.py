@@ -10,8 +10,8 @@ parser = argparse.ArgumentParser(description='Chatbot Interface with Customizabl
 parser.add_argument('--stop-token-ids', type=str, default='', help='Comma-separated stop token IDs')
 parser.add_argument("--host", type=str, default='0.0.0.0')
 parser.add_argument("--port", type=int, default=8101)
-parser.add_argument("--default_model", type=str, default="deepseek-r1-distill-qwen-32b")
-parser.add_argument("--default_model_url", type=str, default="http://100.107.154.21:12000/v1")
+parser.add_argument("--default_model", type=str, default="mc-base-qwen2-vl-7b-250223")
+parser.add_argument("--default_model_url", type=str, default="http://100.107.154.21:22000/v1")
 parser.add_argument("--default_api_key", type=str, default="EMPTY")
 # Parse the arguments
 args = parser.parse_args()
