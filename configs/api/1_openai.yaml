@@ -5,7 +5,7 @@ models:
     - gpt-4o:
         model_name: gpt-4o
         base_url: https://api.dwyu.top/v1
-    - gpt-3.5-turbo:
-        model_name: gpt-3.5-turbo-0125
-        base_url: https://api.dwyu.top/v1
+    # - gpt-3.5-turbo:
+    #     model_name: gpt-3.5-turbo-0125
+    #     base_url: https://api.dwyu.top/v1
         

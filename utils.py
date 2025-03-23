@@ -8,6 +8,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 from PIL import ImageFilter, Image
 import math
+import os
 
 def encode_image_base64(image_input) -> str:
     """
@@ -41,7 +42,9 @@ def encode_image_base64(image_input) -> str:
         raise ValueError("Unsupported input type. Must be a URL (str) or a local file path (str).")
     
 def extract_thought(model_name, text):
-    if 'r1' in model_name or 'reason' in model_name:
+    if 'r1' in model_name or 'reason' in model_name or 'qwq' in model_name:
+        if 'qwq' in model_name: # 'qwq-32b' model ignores the <think> at the beginning of the text
+            text = '<think>' + text
         # find the "<think>" whether in the text 
         think_start = text.find("<think>")
         think_end = text.find("</think>")
@@ -121,7 +124,6 @@ def extract_qwen2_5_object_and_box(text):
 
 def extract_qwen_object_and_box(text):
     import re
-    # 定义模式
     object_pattern = r"<\|object_ref_start\|>(.*?)<\|object_ref_end\|>"
     points_pattern = r"<\|box_start\|>(.*?)<\|box_end\|>"
 
@@ -254,7 +256,9 @@ def show_point(model, history):
     # plt.title(f"Object: {obj_name}")
     plt.axis('off')
     # plt.show()
-    image_path = f"output/images/{datetime.now().strftime('%Y-%m-%d-%H-%M-%S')}-{obj_name}-{str(uuid.uuid4())[:8]}.png"
+    image_folder = f"output/images/{datetime.now().strftime('%Y-%m-%d')}"
+    os.makedirs(image_folder, exist_ok=True)
+    image_path = f"{image_folder}/{datetime.now().strftime('%Y-%m-%d-%H-%M-%S')}-{obj_name}-{str(uuid.uuid4())[:8]}.png".replace(' ', '_')
     plt.savefig(image_path, bbox_inches='tight', pad_inches=0)
     # return obj_name, show_points, image_path
     return image_path
@@ -336,7 +340,10 @@ def show_box(model, history):
         plt.gca().add_patch(rect)  # 添加到当前的绘图区域
     plt.axis('off')
     # plt.show()
-    image_path = f"output/images/{datetime.now().strftime('%Y-%m-%d-%H-%M-%S')}-{obj_name}-{str(uuid.uuid4())[:8]}.png"
+    image_folder = f"output/images/{datetime.now().strftime('%Y-%m-%d')}"
+    os.makedirs(image_folder, exist_ok=True)
+    image_path = f"{image_folder}/{datetime.now().strftime('%Y-%m-%d-%H-%M-%S')}-{obj_name}-{str(uuid.uuid4())[:8]}.png".replace(' ', '_')
+    # image_path = f"output/images/{datetime.now().strftime('%Y-%m-%d-%H-%M-%S')}-{obj_name}-{str(uuid.uuid4())[:8]}.png"
     plt.savefig(image_path, bbox_inches='tight', pad_inches=0)
     # return obj_name, show_boxes, image_path
     return image_path

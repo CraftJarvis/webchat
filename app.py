@@ -10,8 +10,8 @@ parser = argparse.ArgumentParser(description='Chatbot Interface with Customizabl
 parser.add_argument('--stop-token-ids', type=str, default='', help='Comma-separated stop token IDs')
 parser.add_argument("--host", type=str, default='0.0.0.0')
 parser.add_argument("--port", type=int, default=8101)
-parser.add_argument("--default_model", type=str, default="mc-base-qwen2-vl-7b-250223")
-parser.add_argument("--default_model_url", type=str, default="http://100.107.154.21:22000/v1")
+parser.add_argument("--default_model", type=str, default="")
+parser.add_argument("--default_model_url", type=str, default="")
 parser.add_argument("--default_api_key", type=str, default="EMPTY")
 # Parse the arguments
 args = parser.parse_args()
@@ -71,9 +71,13 @@ with gr.Blocks(fill_height=True, theme=gr.themes.Ocean()) as demo:
             chatbot = gr.Chatbot(
                 height=650, 
                 type="messages", 
+                render_markdown=True,
+                sanitize_html=False,
                 show_copy_button=True,
+                show_share_button=True,
                 # additional_inputs=[model, model_url, api_key, temp, max_output_tokens, stream],
                 # fill_height=True
+                allow_tags=["thinking", "think"]
                 )
             multimodaltextbox.render()
             # gr.ChatInterface(predict, type="messages", chatbot=chatbot, textbox=multimodaltextbox, multimodal=True, additional_inputs=[model, model_url, api_key, temp, max_output_tokens, stream], fill_height=True)

@@ -16,6 +16,7 @@ ENABLE_THINKING = True
 ENABLE_POINT_GROUDING = True
 ENABLE_BOX_GROUDING = True
 ENABLE_GROUNDING = True
+REPLACE_HTML_TAG = True
 
 def message_format(message):
     message_content = []
@@ -175,19 +176,26 @@ def predict(message, history, model_name, model_url, api_key, system_prompt, tem
                     partial_message += (chunk.choices[0].delta.content or "")
                 except:
                     pass
+                # if REPLACE_HTML_TAG:
+                #     partial_message = partial_message.replace("<", "&lt;").replace(">", "&gt;")
                 history[-1]["content"] = partial_message
-                if ENABLE_THINKING:
-                    history[-1]["content"] = history[-1]["content"].replace("<think>", "&lt;think&gt;").replace("</think>", "&lt;/think&gt;")
                 yield "", history
         else:
             partial_message = response.choices[0].message.content
+            # if REPLACE_HTML_TAG:
+            #     partial_message = partial_message.replace("<", "&lt;").replace(">", "&gt;")
             history.append({"role":"assistant", "content": partial_message})
             yield "", history
         
+        
+        
         if ENABLE_THINKING: # show thought
+            # history[-1]["content"] = history[-1]["content"]
             from utils import extract_thought
             thought_content, response_content = extract_thought(model_name, partial_message)
-            print("response_content:", response_content)
+            if 'mc-' in model_name:
+                response_content = response_content.replace("\\n", '\n').replace("\\(", '\(').replace("\\)", '\)').replace("\\\\", '\\')
+            print("response_content:", str(response_content))
             # replace the \n with <br>
             # response_content = response_content.replace("\n", "<br>")
             if thought_content:
