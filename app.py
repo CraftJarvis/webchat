@@ -42,7 +42,7 @@ def load_models_from_yaml(path):
         raise ValueError(f"Invalid path: {path}")
                     
 
-multimodaltextbox = gr.MultimodalTextbox(label="Submit your message here")
+multimodaltextbox = gr.MultimodalTextbox(label="Submit your message here", max_plain_text_length=4096)
 with gr.Blocks(fill_height=True, theme=gr.themes.Ocean()) as demo:
     with gr.Row():
         with gr.Column(scale=3):
@@ -75,9 +75,15 @@ with gr.Blocks(fill_height=True, theme=gr.themes.Ocean()) as demo:
                 sanitize_html=False,
                 show_copy_button=True,
                 show_share_button=True,
-                # additional_inputs=[model, model_url, api_key, temp, max_output_tokens, stream],
+                group_consecutive_messages=True,
+                editable="all",
+                avatar_images=("./data/icons/user.png", "./data/icons/bot.png"),
                 # fill_height=True
-                allow_tags=["thinking", "think"]
+                allow_tags=["thinking", "think"],
+                latex_delimiters=[
+                    # { "left": "\\boxed{", "right": "}", "display": True },
+                    { "left": "$$", "right": "$$", "display": True }
+                    ]
                 )
             multimodaltextbox.render()
             # gr.ChatInterface(predict, type="messages", chatbot=chatbot, textbox=multimodaltextbox, multimodal=True, additional_inputs=[model, model_url, api_key, temp, max_output_tokens, stream], fill_height=True)
@@ -146,3 +152,4 @@ with gr.Blocks(fill_height=True, theme=gr.themes.Ocean()) as demo:
             ], inputs=multimodaltextbox, label="Visual Captioning and Box Grounding")
 
 demo.queue().launch(server_name=args.host, server_port=args.port, share=True)
+

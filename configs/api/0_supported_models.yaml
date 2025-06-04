@@ -8,6 +8,9 @@ models:
     # - deepseek-r1-distill-qwen-7b:
     #     model_name: deepseek-r1-distill-qwen-7b
     #     base_url: http://100.107.154.21:13000/v1
+    - kimi-vl-a3b-thinking:
+        model_name: kimi-vl-a3b-thinking
+        base_url: http://localhost:14000/v1
     - qwq-32b:
         model_name: qwq-32b
         base_url: http://100.107.154.21:26000/v1 
@@ -16,13 +19,16 @@ models:
     #     base_url: http://100.76.181.24:8000/v1
     - molmo-7b-d-0924:
         model_name: molmo-7b-d-0924
-        base_url: http://127.0.0.1:9161/v1
+        base_url: http://100.76.181.24:20000/v1
     - qwen2-vl-7b-instruct:
         model_name: qwen2-vl-7b-instruct
         base_url: http://100.76.181.24:8008/v1 # http://100.107.154.21:8000/v1
     - qwen2.5-vl-7b-instruct:
         model_name: qwen2.5-vl-7b-instruct
         base_url: http://100.76.181.24:10000/v1 # http://127.0.0.1:8009/v1 
+    - qwen2.5-vl-32b-instruct:
+        model_name: qwen2.5-vl-32b-instruct
+        base_url: http://100.99.36.31:8008/v1
     # - deepseek-vl2: # need chat template
     #     model_name: deepseek-vl2
     #     base_url: http://100.107.154.21:13000/v1

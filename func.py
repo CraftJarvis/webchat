@@ -193,8 +193,8 @@ def predict(message, history, model_name, model_url, api_key, system_prompt, tem
             # history[-1]["content"] = history[-1]["content"]
             from utils import extract_thought
             thought_content, response_content = extract_thought(model_name, partial_message)
-            if 'mc-' in model_name:
-                response_content = response_content.replace("\\n", '\n').replace("\\(", '\(').replace("\\)", '\)').replace("\\\\", '\\')
+            # if 'mc-' in model_name:
+            #     response_content = response_content.replace("\\n", '\n').replace("\\(", '\(').replace("\\)", '\)').replace("\\\\", '\\')
             print("response_content:", str(response_content))
             # replace the \n with <br>
             # response_content = response_content.replace("\n", "<br>")
@@ -212,7 +212,7 @@ def predict(message, history, model_name, model_url, api_key, system_prompt, tem
                 yield "", history
 
         if ENABLE_GROUNDING:
-            if 'qwen2.5-' in model_name or 'qwen2-' in model_name or 'mc-base' in model_name or 'molmo-' in model_name:
+            if 'qwen2.5-' in model_name or 'qwen2-' in model_name or 'mc-base' in model_name or 'molmo-' in model_name or 'qwen2.5vl-' in model_name:
                 point_image_path = None
                 if ENABLE_POINT_GROUDING: # show point?
                     from utils import show_point
