@@ -63,7 +63,10 @@ with gr.Blocks(fill_height=True, theme=gr.themes.Ocean()) as demo:
                 max_output_tokens = gr.Slider(minimum=0, maximum=8196, value=2048, step=128, interactive=True, label="Max output tokens",)
                 # repetition_penalty = gr.Slider(minimum=0.0, maximum=1.0, value=1.0, step=0.1, interactive=True, label="Repetition penalty (future)",)
                 # gradio checkbox for stream mode or not 
+            with gr.Accordion("Visualization", open=True) as visualization_row:
                 stream = gr.Checkbox(label="Streaming", value = True)
+                thinking = gr.Checkbox(label="Enable Thinking", value = False)
+                grounding = gr.Checkbox(label="Enable Grounding", value = True)
 
             system_prompt = gr.Textbox(placeholder="You are a helpful assistant that can answer questions and help with tasks in Minecraft.", label="System Prompt", lines = 4)
 
@@ -87,7 +90,7 @@ with gr.Blocks(fill_height=True, theme=gr.themes.Ocean()) as demo:
                 )
             multimodaltextbox.render()
             # gr.ChatInterface(predict, type="messages", chatbot=chatbot, textbox=multimodaltextbox, multimodal=True, additional_inputs=[model, model_url, api_key, temp, max_output_tokens, stream], fill_height=True)
-            multimodaltextbox.submit(predict, [multimodaltextbox, chatbot, model_name, model_url, api_key, system_prompt, temp, max_output_tokens, stream], [multimodaltextbox, chatbot])
+            multimodaltextbox.submit(predict, [multimodaltextbox, chatbot, model_name, model_url, api_key, system_prompt, temp, max_output_tokens, stream, thinking, grounding], [multimodaltextbox, chatbot])
             chatbot.like(like)
             # add three buttons in one row 
             with gr.Row():
@@ -96,7 +99,7 @@ with gr.Blocks(fill_height=True, theme=gr.themes.Ocean()) as demo:
                 # submit.click(predict, [multimodaltextbox, chatbot, model, model_url, api_key, temp, max_output_tokens, stream], [multimodaltextbox, chatbot])
                 # add a button to re-generate the response
                 regenerate = gr.Button(value = "🔄  Regenerate")
-                regenerate.click(re_generate, inputs=[multimodaltextbox, chatbot, model_name, model_url, api_key, system_prompt, temp, max_output_tokens, stream], outputs=[multimodaltextbox, chatbot])
+                regenerate.click(re_generate, inputs=[multimodaltextbox, chatbot, model_name, model_url, api_key, system_prompt, temp, max_output_tokens, stream, thinking, grounding], outputs=[multimodaltextbox, chatbot])
                 # # add a button to download the conversation
                 # download = gr.Button(value = "📥 Download")
                 # add a button to remove the last run

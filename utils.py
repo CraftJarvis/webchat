@@ -189,7 +189,7 @@ def denormarlize_molmo_points(image, points):
     return points
 
 def denormarlize_points(model, image, points):
-    if 'qwen2-' in model or 'mc-base' in model:
+    if 'qwen2-' in model or 'qwen2vl-' in model:
         norm_points = denormarlize_qwen_points(image, points)
     elif 'molmo-' in model:
         norm_points = denormarlize_molmo_points(image, points)
@@ -225,7 +225,7 @@ def show_point(model, history):
         else:
             return None
         # points = denormarlize_molmo_points(image, raw_points)
-    elif 'qwen2' in model or 'mc-base' in model:
+    elif 'qwen2-' in model or 'qwen2vl-' in model:
         obj_name, raw_points = extract_qwen_object_and_points(message)
         # print(f"qwen2 obj_name: {obj_name}, raw points: {raw_points}")
         if obj_name is None or len(raw_points) == 0:
@@ -277,13 +277,13 @@ def show_box(model, history):
     if 'molmo-' in model:
         ... # molmo is not supported for showing box
         return None
-    elif 'qwen2-' in model or 'mc-base' in model:
+    elif 'qwen2-' in model or 'qwen2vl-' in model:
         obj_name, points = extract_qwen_object_and_box(message)
         # print(f"obj_name: {obj_name}, raw box: {points}")
         if obj_name is None or len(points) % 2 == 1 or len(points) == 0:
             # return None, None, None
             return None 
-    elif 'qwen2.5-' in model:
+    elif 'qwen2.5-' in model or 'qwen2.5vl-' in model:
         obj_name, points = extract_qwen2_5_object_and_box(message)
         # print(f"obj_name: {obj_name}, raw box: {points}")
         if obj_name is None or len(points) % 2 == 1 or len(points) == 0:
@@ -309,9 +309,9 @@ def show_box(model, history):
         # return None, None, None
         return None 
     
-    if 'qwen2-' in model or 'mc-base' in model:
+    if 'qwen2-' in model or 'qwen2vl-' in model:
         show_points = denormarlize_qwen_points(image, points)
-    elif 'qwen2.5-' in model:
+    elif 'qwen2.5-' in model or 'qwen2.5vl-' in model:
         show_points = denormarlize_qwen2_5_points(image, points)
     else:
         print(f"Unsupported model {model} for denormalize points")

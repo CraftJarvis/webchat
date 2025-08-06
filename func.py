@@ -12,10 +12,10 @@ from utils import encode_image_base64
 
 console = Console()
 
-ENABLE_THINKING = True
+# ENABLE_THINKING = True
 ENABLE_POINT_GROUDING = True
 ENABLE_BOX_GROUDING = True
-ENABLE_GROUNDING = True
+# ENABLE_GROUNDING = True
 REPLACE_HTML_TAG = True
 
 def message_format(message):
@@ -106,16 +106,16 @@ def remove_last_turn(history):
             break
     return history
 
-def re_generate(message, history, model_name, model_url, api_key, system_prompt, temp, max_output_tokens, stream):
+def re_generate(message, history, model_name, model_url, api_key, system_prompt, temp, max_output_tokens, stream, thinking=False, grounding=True):
     # remove the last message from assistant
     for i in range(len(history)):
         if history[-(i+1)]['role'] == 'user':
             history = history[:-i]
             break
     # print("history when re-generate:", history)
-    yield from predict(message, history, model_name, model_url, api_key, system_prompt, temp, max_output_tokens, stream)
+    yield from predict(message, history, model_name, model_url, api_key, system_prompt, temp, max_output_tokens, stream, thinking, grounding)
 
-def predict(message, history, model_name, model_url, api_key, system_prompt, temp, max_output_tokens, stream):
+def predict(message, history, model_name, model_url, api_key, system_prompt, temp, max_output_tokens, stream, thinking=False, grounding=True):
     '''
     - message:
     {'text': 'What is the role of the villager seen in the image?', 'files': [{'path': '/tmp/gradio/bd3ef8883b88f81857dfdb68ebbc757024d4fa718e1e0a138e805f27c1cd245a/030-villager.png', 'url': 'https://72721a834ae34c0685.gradio.live/file=/tmp/gradio/bd3ef8883b88f81857dfdb68ebbc757024d4fa718e1e0a138e805f27c1cd245a/030-villager.png', 'size': None, 'orig_name': '030-villager.png', 'mime_type': 'image/png', 'is_stream': False, 'meta': {'_type': 'gradio.FileData'}}]}
@@ -151,31 +151,45 @@ def predict(message, history, model_name, model_url, api_key, system_prompt, tem
     history = append_history(history, message)
 
     try:
-        response = client.chat.completions.create(
-            model=model_name,  # Model name to use
-            messages=post_conv,  # Chat history
-            temperature=temp,  # Temperature for text generation
-            stream=stream,  # Stream response
-            max_tokens = max_output_tokens,
-            extra_body = {'skip_special_tokens': False},
-            # extra_body={
-            #     'repetition_penalty':
-            #     1,
-            #     'stop_token_ids': [
-            #         int(id.strip()) for id in args.stop_token_ids.split(',')
-            #         if id.strip()
-            #     ] if args.stop_token_ids else []}
-        )
+        if thinking:
+            response = client.chat.completions.create(
+                model=model_name,  # Model name to use
+                messages=post_conv,  # Chat history
+                temperature=temp,  # Temperature for text generation
+                stream=stream,  # Stream response
+                max_tokens = max_output_tokens,
+                extra_body = {'skip_special_tokens': False, 'reasoning_effort': "high"},
+                # extra_body={
+                #     'repetition_penalty':
+                #     1,
+                #     'stop_token_ids': [
+                #         int(id.strip()) for id in args.stop_token_ids.split(',')
+                #         if id.strip()
+                #     ] if args.stop_token_ids else []}
+            )
+        else:
+            response = client.chat.completions.create(
+                model=model_name,  # Model name to use
+                messages=post_conv,  # Chat history
+                temperature=temp,  # Temperature for text generation
+                stream=stream,  # Stream response
+                max_tokens = max_output_tokens,
+                extra_body = {'skip_special_tokens': False},
+            )
         
         if stream:
             # Read and return generated text from response stream
             partial_message = ""
             history.append({"role": "assistant", "content": partial_message})
             for chunk in response:
-                try:
-                    partial_message += (chunk.choices[0].delta.content or "")
-                except:
-                    pass
+                if len(chunk.choices) > 0:
+                    if hasattr(chunk.choices[0].delta, 'content'):
+                        if chunk.choices[0].delta.content:
+                            partial_message += (chunk.choices[0].delta.content or "")
+                # try:
+                #     partial_message += (chunk.choices[0].delta.content or "")
+                # except:
+                #     pass
                 # if REPLACE_HTML_TAG:
                 #     partial_message = partial_message.replace("<", "&lt;").replace(">", "&gt;")
                 history[-1]["content"] = partial_message
@@ -187,15 +201,29 @@ def predict(message, history, model_name, model_url, api_key, system_prompt, tem
             history.append({"role":"assistant", "content": partial_message})
             yield "", history
         
-        
-        
-        if ENABLE_THINKING: # show thought
-            # history[-1]["content"] = history[-1]["content"]
+        # show thinking content
+        if thinking:
+            if not stream:
+                if hasattr(response.choices[0].message, 'reasoning_content') and response.choices[0].message.reasoning_content:
+                    thought_content = response.choices[0].message.reasoning_content
+                    response_content = partial_message
+                    history[-1] = {
+                        "role":"assistant",
+                        "content":thought_content,
+                        "metadata":{"title": "🧠 Thinking"},
+                        "options": None
+                    }
+                    history.append({
+                        "role":"assistant",
+                        "content":response_content
+                    })
+                    yield "", history
+        else:
             from utils import extract_thought
             thought_content, response_content = extract_thought(model_name, partial_message)
             # if 'mc-' in model_name:
             #     response_content = response_content.replace("\\n", '\n').replace("\\(", '\(').replace("\\)", '\)').replace("\\\\", '\\')
-            print("response_content:", str(response_content))
+            # print("response_content:", str(response_content))
             # replace the \n with <br>
             # response_content = response_content.replace("\n", "<br>")
             if thought_content:
@@ -211,32 +239,31 @@ def predict(message, history, model_name, model_url, api_key, system_prompt, tem
                 })
                 yield "", history
 
-        if ENABLE_GROUNDING:
-            if 'qwen2.5-' in model_name or 'qwen2-' in model_name or 'mc-base' in model_name or 'molmo-' in model_name or 'qwen2.5vl-' in model_name:
-                point_image_path = None
-                if ENABLE_POINT_GROUDING: # show point?
-                    from utils import show_point
-                    # obj_name, points, image_path = show_point(model_name, history)
-                    point_image_path = show_point(model_name, history)
+        if grounding:
+            point_image_path = None
+            if ENABLE_POINT_GROUDING: # show point?
+                from utils import show_point
+                # obj_name, points, image_path = show_point(model_name, history)
+                point_image_path = show_point(model_name, history)
 
-                box_image_path = None
-                if ENABLE_BOX_GROUDING:
-                    from utils import show_box
-                    # obj_name, boxes, image_path = show_box(model_name, history)
-                    box_image_path = show_box(model_name, history)
-                
-                if box_image_path is not None:
-                    history[-1]["metadata"] = {"title": "🎨 Grounding Box"}
-                    history.append({"role": "assistant", "content":{"path": box_image_path}})
-                    yield "", history
+            box_image_path = None
+            if ENABLE_BOX_GROUDING:
+                from utils import show_box
+                # obj_name, boxes, image_path = show_box(model_name, history)
+                box_image_path = show_box(model_name, history)
+            
+            if box_image_path is not None:
+                history[-1]["metadata"] = {"title": "🎨 Grounding Box"}
+                history.append({"role": "assistant", "content":{"path": box_image_path}})
+                yield "", history
 
-                if point_image_path is not None:
-                    if 'molmo-' in model_name:
-                        history[-1]["content"] = f"```html\n{history[-1]['content']}\n```"
-                    history[-1]["metadata"] = {"title": "🎨 Grounding Point"}
-                    # history[-1]["content"] = gr.HTML(history[-1]["content"])
-                    history.append({"role": "assistant", "content":{"path": point_image_path}})
-                    yield "", history
+            if point_image_path is not None:
+                if 'molmo-' in model_name:
+                    history[-1]["content"] = f"```html\n{history[-1]['content']}\n```"
+                history[-1]["metadata"] = {"title": "🎨 Grounding Point"}
+                # history[-1]["content"] = gr.HTML(history[-1]["content"])
+                history.append({"role": "assistant", "content":{"path": point_image_path}})
+                yield "", history
 
         
 

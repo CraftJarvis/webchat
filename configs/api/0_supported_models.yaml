@@ -1,19 +1,19 @@
 models:
-    - llama-3.3-70b-instruct:
-        model_name: llama-3.3-70b-instruct
-        base_url: http://100.107.154.21:8000/v1
-    - deepseek-r1-distill-qwen-32b:
-        model_name: deepseek-r1-distill-qwen-32b
-        base_url: http://100.107.154.21:12000/v1
+    # - llama-3.3-70b-instruct:
+    #     model_name: llama-3.3-70b-instruct
+    #     base_url: http://100.107.154.21:8000/v1
+    # - deepseek-r1-distill-qwen-32b:
+    #     model_name: deepseek-r1-distill-qwen-32b
+    #     base_url: http://100.107.154.21:12000/v1
     # - deepseek-r1-distill-qwen-7b:
     #     model_name: deepseek-r1-distill-qwen-7b
     #     base_url: http://100.107.154.21:13000/v1
-    - kimi-vl-a3b-thinking:
-        model_name: kimi-vl-a3b-thinking
-        base_url: http://localhost:14000/v1
-    - qwq-32b:
-        model_name: qwq-32b
-        base_url: http://100.107.154.21:26000/v1 
+    # - kimi-vl-a3b-thinking:
+    #     model_name: kimi-vl-a3b-thinking
+    #     base_url: http://localhost:14000/v1
+    # - qwq-32b:
+    #     model_name: qwq-32b
+    #     base_url: http://100.107.154.21:26000/v1 
     # - deepseek-r1-distill-qwen-14b:
     #     model_name: deepseek-r1-distill-qwen-14b
     #     base_url: http://100.76.181.24:8000/v1
@@ -26,9 +26,9 @@ models:
     - qwen2.5-vl-7b-instruct:
         model_name: qwen2.5-vl-7b-instruct
         base_url: http://100.76.181.24:10000/v1 # http://127.0.0.1:8009/v1 
-    - qwen2.5-vl-32b-instruct:
-        model_name: qwen2.5-vl-32b-instruct
-        base_url: http://100.99.36.31:8008/v1
+    # - qwen2.5-vl-32b-instruct:
+    #     model_name: qwen2.5-vl-32b-instruct
+    #     base_url: http://100.99.36.31:8008/v1
     # - deepseek-vl2: # need chat template
     #     model_name: deepseek-vl2
     #     base_url: http://100.107.154.21:13000/v1
@@ -46,22 +46,22 @@ models:
     #     base_url: http://100.77.86.12:8008/v1
     - mc-base-qwen2-vl-2b-250216:
         model_name: mc-base-qwen2-vl-2b-250216
-        base_url: http://100.76.181.24:21000/v1
+        base_url: http://100.87.156.121:21000/v1
     # - mc-base-qwen2-vl-7b-250215:
     #     model_name: mc-base-qwen2-vl-7b-250215
     #     base_url: http://100.107.154.21:20000/v1
     - mc-base-qwen2-vl-7b-250223:
         model_name: mc-base-qwen2-vl-7b-250223
         base_url: http://100.76.181.24:22000/v1
-    - mc-base-llava-vicuna-13b-250217:
-        model_name: mc-base-llava-vicuna-13b-250217
-        base_url: http://100.107.154.21:19000/v1
+    # - mc-base-llava-vicuna-13b-250217:
+    #     model_name: mc-base-llava-vicuna-13b-250217
+    #     base_url: http://100.107.154.21:19000/v1
     # - mc-reason-qwen2-vl-7b-250224-step2400:
     #     model_name: mc-reason-qwen2-vl-7b-250224-step2400
     #     base_url: http://100.107.154.21:24000/v1
-    - mc-reason-qwen2-vl-7b:
-        model_name: mc-reason-qwen2-vl-7b
-        base_url: http://100.77.86.12:9010/v1
+    # - mc-reason-qwen2-vl-7b:
+    #     model_name: mc-reason-qwen2-vl-7b
+    #     base_url: http://100.77.86.12:9010/v1
     - custom:
         model_name: 
         base_url: 
