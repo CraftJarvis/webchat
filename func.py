@@ -149,32 +149,20 @@ def predict(message, history, model_name, model_url, api_key, system_prompt, tem
     # Create a chat completion request and send it to the API server
 
     history = append_history(history, message)
-
+    message_extra_body = {'skip_special_tokens': False}
+    if thinking:
+        message_extra_body['reasoning_effort'] = "high"
+        stream = False
+    
+    # if thinking:
     try:
-        if thinking:
-            response = client.chat.completions.create(
+        response = client.chat.completions.create(
                 model=model_name,  # Model name to use
                 messages=post_conv,  # Chat history
                 temperature=temp,  # Temperature for text generation
                 stream=stream,  # Stream response
                 max_tokens = max_output_tokens,
-                extra_body = {'skip_special_tokens': False, 'reasoning_effort': "high"},
-                # extra_body={
-                #     'repetition_penalty':
-                #     1,
-                #     'stop_token_ids': [
-                #         int(id.strip()) for id in args.stop_token_ids.split(',')
-                #         if id.strip()
-                #     ] if args.stop_token_ids else []}
-            )
-        else:
-            response = client.chat.completions.create(
-                model=model_name,  # Model name to use
-                messages=post_conv,  # Chat history
-                temperature=temp,  # Temperature for text generation
-                stream=stream,  # Stream response
-                max_tokens = max_output_tokens,
-                extra_body = {'skip_special_tokens': False},
+                extra_body = message_extra_body,
             )
         
         if stream:
@@ -202,42 +190,26 @@ def predict(message, history, model_name, model_url, api_key, system_prompt, tem
             yield "", history
         
         # show thinking content
+        thought_content = None 
         if thinking:
-            if not stream:
-                if hasattr(response.choices[0].message, 'reasoning_content') and response.choices[0].message.reasoning_content:
-                    thought_content = response.choices[0].message.reasoning_content
-                    response_content = partial_message
-                    history[-1] = {
-                        "role":"assistant",
-                        "content":thought_content,
-                        "metadata":{"title": "🧠 Thinking"},
-                        "options": None
-                    }
-                    history.append({
-                        "role":"assistant",
-                        "content":response_content
-                    })
-                    yield "", history
+            if hasattr(response.choices[0].message, 'reasoning_content') and response.choices[0].message.reasoning_content:
+                thought_content = response.choices[0].message.reasoning_content
+                response_content = partial_message
         else:
             from utils import extract_thought
             thought_content, response_content = extract_thought(model_name, partial_message)
-            # if 'mc-' in model_name:
-            #     response_content = response_content.replace("\\n", '\n').replace("\\(", '\(').replace("\\)", '\)').replace("\\\\", '\\')
-            # print("response_content:", str(response_content))
-            # replace the \n with <br>
-            # response_content = response_content.replace("\n", "<br>")
-            if thought_content:
-                history[-1] = {
-                    "role":"assistant",
-                    "content":thought_content,
-                    "metadata":{"title": "🧠 Thinking"},
-                    "options": None
-                }
-                history.append({
-                    "role":"assistant",
-                    "content":response_content
-                })
-                yield "", history
+        if thought_content:
+            history[-1] = {
+                "role":"assistant",
+                "content":thought_content,
+                "metadata":{"title": "🧠 Thinking"},
+                "options": None
+            }
+            history.append({
+                "role":"assistant",
+                "content":response_content
+            })
+            yield "", history
 
         if grounding:
             point_image_path = None

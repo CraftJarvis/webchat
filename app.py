@@ -63,7 +63,7 @@ with gr.Blocks(fill_height=True, theme=gr.themes.Ocean()) as demo:
                 max_output_tokens = gr.Slider(minimum=0, maximum=8196, value=2048, step=128, interactive=True, label="Max output tokens",)
                 # repetition_penalty = gr.Slider(minimum=0.0, maximum=1.0, value=1.0, step=0.1, interactive=True, label="Repetition penalty (future)",)
                 # gradio checkbox for stream mode or not 
-            with gr.Accordion("Visualization", open=True) as visualization_row:
+            with gr.Accordion("Visualization", open=False) as visualization_row:
                 stream = gr.Checkbox(label="Streaming", value = True)
                 thinking = gr.Checkbox(label="Enable Thinking", value = False)
                 grounding = gr.Checkbox(label="Enable Grounding", value = True)
